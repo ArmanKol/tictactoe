@@ -21,30 +21,34 @@ namespace WindowsFormsApp1
         public Form1()
         {
             InitializeComponent();
-
-            t.list.Add(button1);
-            t.list.Add(button2);
-            t.list.Add(button3);
-            t.list.Add(button4);
-            t.list.Add(button5);
-            t.list.Add(button6);
-            t.list.Add(button7);
-            t.list.Add(button8);
-            t.list.Add(button9);
         }
 
         private void button_Click(object sender, EventArgs e)
         {
             Button btn = sender as Button;
-            t.Button = btn;
 
+            t.dict.Add(btn.TabIndex, t.cellstatus);
             result = t.ChooseCell(btn.TabIndex);
+            btn.Text = t.DrawCell(t.cellstatus);
+            Console.WriteLine(t.Board(btn.TabIndex));
             t.Checkwin();
+
+            if(t.Status == TicTacToeEngine.GameStatus.PlayerOWins || t.Status == TicTacToeEngine.GameStatus.PlayerXWins)
+            {
+                t.Reset();
+                button1.Text = "";
+                button2.Text = "";
+                button3.Text = "";
+                button4.Text = "";
+                button5.Text = "";
+                button6.Text = "";
+                button7.Text = "";
+                button8.Text = "";
+                button9.Text = "";
+
+            }
+
             t.PlayerChange(result);
-
-
-
-
 
         }
     }

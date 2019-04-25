@@ -11,36 +11,77 @@ namespace ClassLibrary1
     public class TicTacToeEngine
     {
 
+        public Dictionary<int, CellStatus> dict = new Dictionary<int, CellStatus>();
+
+        public string board = "-------------\n" +
+                            "| 0 | 1 | 2 |\n" +
+                            "-------------\n" +
+                            "| 3 | 4 | 5 |\n" +
+                            "-------------\n" +
+                            "| 6 | 7 | 8 |\n" +
+                            "-------------\n";
+
         public TicTacToeEngine()
         {
-            Status = 0;
+            Status = GameStatus.PlayerOPlays;
         }
-
-        public ArrayList list = new ArrayList();
-
-        public Button Button { get; set; }
 
         public enum GameStatus
         {
             PlayerOPlays, PlayerXPlays, Equal, PlayerOWins, PlayerXWins
         }
 
+        public enum CellStatus
+        {
+            PlayerO, PlayerX, Empty
+        }
+
         public GameStatus Status { get; private set; }
+        public CellStatus cellstatus { get; set; }
+
+        public string Board(int x)
+        {
+            string boardX = board;
+            if (dict.ContainsKey(x))
+            {
+                if(dict[x] == CellStatus.PlayerX)
+                {
+                    boardX = boardX.Replace(Convert.ToString(x), "X");
+                }
+                if(dict[x] == CellStatus.PlayerO)
+                {
+                    boardX = boardX.Replace(Convert.ToString(x), "O");
+                }
+            }
+            return boardX;
+        }
 
         public bool ChooseCell(int x)
         {
-            if(Button.TabIndex == x && Button.Text.Equals("") && Status == GameStatus.PlayerOPlays)
+
+            if(Status == GameStatus.PlayerOPlays && dict.ContainsKey(x))
             {
-                Button.Text = "O";
                 return true;
             }
-            else if(Button.TabIndex == x && Button.Text.Equals("") && Status == GameStatus.PlayerXPlays)
+            else if(Status == GameStatus.PlayerXPlays && dict.ContainsKey(x))
             {
-                Button.Text = "X";
                 return true;
             }
 
             return false;
+        }
+
+        public string DrawCell(CellStatus x)
+        {   
+            if(dict.ContainsValue(x) && Status == GameStatus.PlayerOPlays)
+            {
+                return "O";
+            }
+            if(dict.ContainsValue(x) && Status == GameStatus.PlayerXPlays)
+            {
+                return "X";
+            }
+            return "";
         }
 
         public void PlayerChange(bool result)
@@ -50,99 +91,71 @@ namespace ClassLibrary1
                 if (Status == GameStatus.PlayerOPlays)
                 {
                     Status = GameStatus.PlayerXPlays;
+                    cellstatus = CellStatus.PlayerX;
                 }
                 else
                 {
                     Status = GameStatus.PlayerOPlays;
+                    cellstatus = CellStatus.PlayerO;
                 }
             }
         }
 
         public void Checkwin()
         {
-            string player = "";
-            Button button1 = (Button)list[0];
-            Button button2 = (Button)list[8];
-            Button button3 = (Button)list[7];
-            Button button4 = (Button)list[3];
-            Button button5 = (Button)list[5];
-            Button button6 = (Button)list[4];
-            Button button7 = (Button)list[6];
-            Button button8 = (Button)list[2];
-            Button button9 = (Button)list[1];
+            CellStatus player = CellStatus.Empty;
 
             if (Status == GameStatus.PlayerOPlays)
             {
-                player = "O";
+                player = CellStatus.PlayerO;
             }
             if(Status == GameStatus.PlayerXPlays)
             {
-                player = "X";
+                player = CellStatus.PlayerX;
             }
-
-            if ((button1.Text.Equals(player) && button2.Text.Equals(player)) && (button2.Text.Equals(player) && button3.Text.Equals(player)))
+   
+            for(int i=0; i<9; i++)
             {
-                MessageBox.Show("Hoera speler " + Status + " heeft gewonnen");
-                Reset();
-            }
+                if((dict.ContainsKey(i) && dict.ContainsKey(i + 1)) && (dict.ContainsKey(i + 1) && dict.ContainsKey(i + 2)) && (dict[i] == player && dict[i + 1] == player && dict[i + 2] == player))
+                {
+                    MessageBox.Show("Hoera speler " + Status + " heeft gewonnen");
+                    if (Status == GameStatus.PlayerOPlays)
+                    {
+                        Status = GameStatus.PlayerOWins;
+                    }
+                    else
+                    {
+                        Status = GameStatus.PlayerXWins;
+                    }
+                    
+                }
 
-            if ((button4.Text.Equals(player) && button5.Text.Equals(player)) && (button5.Text.Equals(player) && button6.Text.Equals(player)))
-            {
-                MessageBox.Show("Hoera speler " + Status + " heeft gewonnen");
-                Reset();
+                if ((dict.ContainsKey(i) && dict.ContainsKey(i + 3)) && (dict.ContainsKey(i + 3) && dict.ContainsKey(i + 6)) && ((dict[i] == player && dict[i + 3] == player && dict[i + 6] == player)))
+                {
+                    MessageBox.Show("Hoera speler " + Status + " heeft gewonnen");
+                    if (Status == GameStatus.PlayerOPlays)
+                    {
+                        Status = GameStatus.PlayerOWins;
+                    }
+                    else
+                    {
+                        Status = GameStatus.PlayerXWins;
+                    }
+                    
+                }
+                if(dict.Count() == 9)
+                {
+                    MessageBox.Show("Jullie hebben gelijk gespeeld");
+                    Status = GameStatus.Equal;
+                    
+                }
             }
-
-            if ((button7.Text.Equals(player) && button8.Text.Equals(player)) && (button8.Text.Equals(player) && button9.Text.Equals(player)))
-            {
-                MessageBox.Show("Hoera speler " + Status + " heeft gewonnen");
-                Reset();
-            }
-
-            if ((button1.Text.Equals(player) && button4.Text.Equals(player)) && (button4.Text.Equals(player) && button7.Text.Equals(player)))
-            {
-                MessageBox.Show("Hoera speler " + Status + " heeft gewonnen");
-                Reset();
-            }
-
-            if ((button2.Text.Equals(player) && button5.Text.Equals(player)) && (button5.Text.Equals(player) && button8.Text.Equals(player)))
-            {
-                MessageBox.Show("Hoera speler " + Status + " heeft gewonnen");
-                Reset();
-            }
-
-            if ((button3.Text.Equals(player) && button6.Text.Equals(player)) && (button6.Text.Equals(player) && button9.Text.Equals(player)))
-            {
-                MessageBox.Show("Hoera speler " + Status + " heeft gewonnen");
-                Reset();
-            }
-
-            if ((button1.Text.Equals(player) && button5.Text.Equals(player)) && (button5.Text.Equals(player) && button9.Text.Equals(player)))
-            {
-                MessageBox.Show("Hoera speler " + Status + " heeft gewonnen");
-                Reset();
-            }
-
-            if ((button3.Text.Equals(player) && button5.Text.Equals(player)) && (button5.Text.Equals(player) && button7.Text.Equals(player)))
-            {
-                MessageBox.Show("Hoera speler " + Status + " heeft gewonnen");
-                Reset();
-            }
-
-            if (button1.Text != "" && button2.Text != "" && button3.Text != "" && button4.Text != "" && button5.Text != "" && button6.Text != "" && button7.Text != "" && button8.Text != "" && button9.Text != "")
-            {
-                MessageBox.Show("Jullie hebben " + GameStatus.Equal + " gespeeld");
-                Reset();
-            }
-
         }
 
         public void Reset()
         {
-           foreach(Button btn in list)
-            {
-                btn.Text = "";
-                Status = GameStatus.PlayerOPlays;
-            }
+            Status = GameStatus.PlayerXPlays;
+            dict.Clear();
         }
     }
 }
